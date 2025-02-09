@@ -4,6 +4,7 @@ import json
 import platform
 import pandas as pd
 import stat
+from tqdm import tqdm
 
 file_path = "/Users/alain/Library/CloudStorage/OneDrive-EducationVaud/coding/projects-data-analysis.csv"
 file_path = "test.py"
@@ -55,19 +56,25 @@ class FilesDatabase(pd.DataFrame):
     
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
-        
+    
+    _pbar = None
     @classmethod
-    def create(cls,src):
+    def create(cls,src,show_progression=True):
         #print(cls)
         pd.DataFrame()
         self=cls(cls(columns=["name","size","n","ctime","mtime","atime","level"]).set_index("name"))
+        self._show_progression=show_progression
         #self = self[::-1]
         #print(type(self))
+
+        total = sum(map(lambda d:len(d[1])+len(d[2]),os.walk(src)))
         
-        self._process("",src,0)
+        with tqdm(total=total,disable=not show_progression) as self._pbar:
+            self._process("",src,0)
+            
         self._remove_blank_index()
         return cls(self[::-1])
-        
+
     def _process(self, relpath,path,level):
         if os.path.islink(path): # on va éviter de se casser la tête avec ces links
             return (0,0)
@@ -83,6 +90,7 @@ class FilesDatabase(pd.DataFrame):
                 size_add,n_add = self._process(os.path.join(relpath,item),os.path.join(path,item),levelitem)
                 size+=size_add
                 n+=n_add
+                self._pbar.update(1)
         
         #ctime=_get_ctime(st,path)
         #dnprint(pd.to_datetime(int(_get_ctime(st,path)), unit="s"))
@@ -140,7 +148,14 @@ class FilesDatabase(pd.DataFrame):
         return type(self)(db)
     
 #db = FilesDatabase.read_csv("db.csv")
-db = FilesDatabase.create(".")
+if __name__ == "__main__":
+    #FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud/zzzarchives/ecole2" # 9s, 2263
+    FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud/zzzarchives/coding/venv-windows" # 6s, 1654 # PERFECT
+    #FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud/zzzarchives/coding/MetalColor" #8s, 2046
+    #FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud/zzzarchives/coding/github-explore/requests"
+    
+    #FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud"
+    db = FilesDatabase.create(FILE)
 
 
             #df.loc[]
