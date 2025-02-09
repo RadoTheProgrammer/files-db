@@ -7,8 +7,10 @@ FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud/zzzarchives/codin
 #FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud"
 
 #timeit.timeit(lambda:FilesDatabase.create(".."),number=3)
-print(timeit.timeit(lambda:FilesDatabase.create(".."),number=1))
-##db = FilesDatabase.create("..")#
+print(timeit.timeit(lambda:FilesDatabase.create(FILE),number=1))
+# BIG OPTIMIZATION: 1.25 -> 0.25, wow 5x faster
+#print(FilesDatabase.create(".."))
+##db = FilesDatabase.create("..")##
 while True:pass
 
     

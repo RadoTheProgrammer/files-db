@@ -57,56 +57,65 @@ class FilesDatabase(pd.DataFrame):
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
     
-    _pbar = None
+    _pbar = _data = None
     @classmethod
     def create(cls,src,show_progression=True):
         #print(cls)
-        pd.DataFrame()
-        self=cls(cls(columns=["name","size","n","ctime","mtime","atime","level"]).set_index("name"))
+
 
         #self = self[::-1]
         #print(type(self))
+        def _process(relpath,path,level):
+            if os.path.islink(path): # on va éviter de se casser la tête avec ces links
+                return (0,0)
+
+            st=os.stat(path)
+
+            size=st.st_size
+            n=1
+            
+            if stat.S_ISDIR(st.st_mode): # equivalent to isdir
+                levelitem = level+1
+                for item in os.listdir(path):
+                    size_add,n_add = _process(os.path.join(relpath,item),os.path.join(path,item),levelitem)
+                    size+=size_add
+                    n+=n_add
+                    pbar.update(1)
+            
+            #ctime=_get_ctime(st,path)
+            #dnprint(pd.to_datetime(int(_get_ctime(st,path)), unit="s"))
+            data["name"].append(relpath)
+            data["size"].append(size)
+            data["n"].append(n)
+            data["ctime"].append(_to_datetime(_get_ctime(st,path)))
+            data["mtime"].append(_to_datetime(st.st_mtime))
+            data["atime"].append(_to_datetime(st.st_atime))
+            data["level"].append(level)
+            # a={
+            #     "size":size,
+            #     "n":n,
+            #     "ctime": _to_datetime(_get_ctime(st,path)),
+            #     "mtime": _to_datetime(st.st_mtime),
+            #     "atime": _to_datetime(st.st_atime),
+            #     "level": level
+            # }
+            # self.loc[relpath]=a # taking 4/5 !!
+            return size,n
+        
         if show_progression:
             print("Calculating total for progression...")
             total = sum(map(lambda d:len(d[1])+len(d[2]),os.walk(src)))
+
         else:
             total=0
         
-        with tqdm(total=total,disable=not show_progression) as self._pbar:
-            self._process("",src,0)
-            
+        data={"name":[],"size":[],"n":[],"ctime":[],"mtime":[],"atime":[],"level":[]}
+        with tqdm(total=total,disable=not show_progression) as pbar:
+            _process("",src,0)
+        
+        self=cls(cls(data)[::-1].set_index("name"))
         self._remove_blank_index()
-        return cls(self[::-1])
-
-    def _process(self, relpath,path,level):
-        if os.path.islink(path): # on va éviter de se casser la tête avec ces links
-            return (0,0)
-
-        st=os.stat(path)
-
-        size=st.st_size
-        n=1
-        
-        if stat.S_ISDIR(st.st_mode): # equivalent to isdir
-            levelitem = level+1
-            for item in os.listdir(path):
-                size_add,n_add = self._process(os.path.join(relpath,item),os.path.join(path,item),levelitem)
-                size+=size_add
-                n+=n_add
-                self._pbar.update(1)
-        
-        #ctime=_get_ctime(st,path)
-        #dnprint(pd.to_datetime(int(_get_ctime(st,path)), unit="s"))
-        a={
-            "size":size,
-            "n":n,
-            "ctime": _to_datetime(_get_ctime(st,path)),
-            "mtime": _to_datetime(st.st_mtime),
-            "atime": _to_datetime(st.st_atime),
-            "level": level
-        }
-        self.loc[relpath]=a # taking 4/5 !!
-        return size,n
+        return self
             
     @classmethod
     def read_csv(cls,file):
