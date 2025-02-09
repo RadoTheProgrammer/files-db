@@ -9,6 +9,8 @@ FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud/zzzarchives/codin
 #timeit.timeit(lambda:FilesDatabase.create(".."),number=3)
 print(timeit.timeit(lambda:FilesDatabase.create(FILE),number=1))
 # BIG OPTIMIZATION: 1.25 -> 0.25, wow 5x faster
+
+# another optimization: 0.25 -> 0.11
 #print(FilesDatabase.create(".."))
 ##db = FilesDatabase.create("..")##
 while True:pass

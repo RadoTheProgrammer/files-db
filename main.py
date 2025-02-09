@@ -87,9 +87,9 @@ class FilesDatabase(pd.DataFrame):
             data["name"].append(relpath)
             data["size"].append(size)
             data["n"].append(n)
-            data["ctime"].append(_to_datetime(_get_ctime(st,path)))
-            data["mtime"].append(_to_datetime(st.st_mtime))
-            data["atime"].append(_to_datetime(st.st_atime))
+            data["ctime"].append(_get_ctime(st,path))
+            data["mtime"].append(st.st_mtime)
+            data["atime"].append(st.st_atime)
             data["level"].append(level)
             # a={
             #     "size":size,
@@ -113,7 +113,11 @@ class FilesDatabase(pd.DataFrame):
         with tqdm(total=total,disable=not show_progression) as pbar:
             _process("",src,0)
         
-        self=cls(cls(data)[::-1].set_index("name"))
+        self=cls(cls(data)[::-1].set_index("name").astype({
+            "ctime":"datetime64[s]",
+            "mtime":"datetime64[s]",
+            "atime":"datetime64[s]",
+            }))
         self._remove_blank_index()
         return self
             
