@@ -69,7 +69,11 @@ class FilesDatabase(pd.DataFrame):
         return cls(self[::-1])
         
     def _process(self, relpath,path,level):
+        if os.path.islink(path): # on va éviter de se casser la tête avec ces links
+            return (0,0)
+
         st=os.stat(path)
+
         size=st.st_size
         n=1
         
