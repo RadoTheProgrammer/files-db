@@ -63,11 +63,14 @@ class FilesDatabase(pd.DataFrame):
         #print(cls)
         pd.DataFrame()
         self=cls(cls(columns=["name","size","n","ctime","mtime","atime","level"]).set_index("name"))
-        self._show_progression=show_progression
+
         #self = self[::-1]
         #print(type(self))
-
-        total = sum(map(lambda d:len(d[1])+len(d[2]),os.walk(src)))
+        if show_progression:
+            print("Calculating total for progression...")
+            total = sum(map(lambda d:len(d[1])+len(d[2]),os.walk(src)))
+        else:
+            total=0
         
         with tqdm(total=total,disable=not show_progression) as self._pbar:
             self._process("",src,0)
@@ -94,7 +97,7 @@ class FilesDatabase(pd.DataFrame):
         
         #ctime=_get_ctime(st,path)
         #dnprint(pd.to_datetime(int(_get_ctime(st,path)), unit="s"))
-        self.loc[relpath] = {
+        a={
             "size":size,
             "n":n,
             "ctime": _to_datetime(_get_ctime(st,path)),
@@ -102,6 +105,7 @@ class FilesDatabase(pd.DataFrame):
             "atime": _to_datetime(st.st_atime),
             "level": level
         }
+        self.loc[relpath]=a # taking 4/5 !!
         return size,n
             
     @classmethod
