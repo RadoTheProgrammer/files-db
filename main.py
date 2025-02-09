@@ -65,6 +65,7 @@ class FilesDatabase(pd.DataFrame):
         #print(type(self))
         
         self._process("",src,0)
+        self._remove_blank_index()
         return cls(self[::-1])
         
     def _process(self, relpath,path,level):
@@ -93,20 +94,36 @@ class FilesDatabase(pd.DataFrame):
             
     @classmethod
     def read_csv(cls,file):
-        return cls(pd.read_csv(file).astype({
+        self = cls(pd.read_csv(file).astype({
             "ctime":"datetime64[ns]",
             "mtime":"datetime64[ns]",
             "atime":"datetime64[ns]",
             "name":"string",
             }
         ).set_index("name"))
+        self._remove_blank_index()
+        return self
     
     def ls(self):
         return type(self)(self[self["level"]==1])
     
-    def sort(self,by="name",ascending=True):
+    ASCENDING_AUTO = {
+        "name":True,
+        "size":False,
+        "n":False,
+        "ctime":True,
+        "mtime":True,
+        "atime":True,
+        "level":True,
+    }
+    def sort(self,by="name",ascending="auto"):
+        if ascending=="auto":
+            ascending = self.ASCENDING_AUTO[by]
         return type(self)(self.sort_values(by=by, ascending=ascending))
     
+    def _remove_blank_index(self):
+        self.index=self.index.map(lambda name:name if name else ".")
+
     def __call__(self,item:str): # at start used __getitem__ but it would cause conflict
         item = item.strip("/")
         if item not in self.index:
@@ -115,14 +132,13 @@ class FilesDatabase(pd.DataFrame):
         db = type(self)(self[self.index.str.startswith(item)])    
         db.level-=1
         db.index = db.index.str[len(item)+1:] #remove the head
+        db._remove_blank_index()
         return type(self)(db)
     
 #db = FilesDatabase.read_csv("db.csv")
 db = FilesDatabase.create(".")
 
-#db.sort_values()
-#db.to_csv("db.csv")
-print(db(".git"))
+
             #df.loc[]
                     
             
