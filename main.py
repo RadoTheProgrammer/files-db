@@ -23,6 +23,7 @@ st_ctime 2025-02-07 22:01:40.297824
 system = platform.system()
 
 if system=="Windows":
+
     def _get_ctime(st,path):
         return st.st_ctime
 elif system=="Darwin":
@@ -50,14 +51,15 @@ elif system=="Linux":
 
 def _to_datetime(timestamp):
     return pd.to_datetime(int(timestamp), unit="s")
-        
-
+NAME="name"
+SIZE="size"
 class FilesDatabase(pd.DataFrame):
     
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
     
     _pbar = _data = None
+    
     @classmethod
     def create(cls,src,show_progression=True):
         #print(cls)
@@ -65,7 +67,12 @@ class FilesDatabase(pd.DataFrame):
 
         #self = self[::-1]
         #print(type(self))
+
         def _process(relpath,path,level):
+            """
+            This is the core function of the whole program, the time the program takes depend on it
+            so I optimize it as possible
+            """
             if os.path.islink(path): # on va éviter de se casser la tête avec ces links
                 return (0,0)
 
@@ -102,8 +109,11 @@ class FilesDatabase(pd.DataFrame):
             # self.loc[relpath]=a # taking 4/5 !!
             return size,n
         
+        # end of the core function
+        
+        
         if show_progression:
-            print("Calculating total for progression...")
+            #print("Calculating total for progression...")
             total = sum(map(lambda d:len(d[1])+len(d[2]),os.walk(src)))
 
         else:
@@ -113,11 +123,12 @@ class FilesDatabase(pd.DataFrame):
         with tqdm(total=total,disable=not show_progression) as pbar:
             _process("",src,0)
         
-        self=cls(cls(data)[::-1].set_index("name").astype({
+        self=cls(cls(data)[::-1].astype({
             "ctime":"datetime64[s]",
             "mtime":"datetime64[s]",
             "atime":"datetime64[s]",
-            }))
+            "name":"string"
+            }).set_index("name"))
         self._remove_blank_index()
         return self
             
