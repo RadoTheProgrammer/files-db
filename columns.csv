@@ -1,8 +1,0 @@
-name-col,dtype,nbytes,comment
-name,object/string,8,object or string it's same always 8. the object is 49+len(s). so total is 57+len(s)
-size,uint64,8,uint32 is a bit too small: max(uint32) is 4GB. uint64 being 10^10 bigger xD
-n,uint32,4,ca passe large en vrai. 
-ctime,datetime64[ns],8,on peut que faire datetime64. pas de datetime32
-mtime,datetime64[ns],8,on peut que faire datetime64. pas de datetime32
-atime,datetime64[ns],8,on peut que faire datetime64. pas de datetime32
-level,uint8,1,256 niveaux c largement suffisant xD
