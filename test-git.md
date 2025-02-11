@@ -10,3 +10,7 @@ C
 `git revert <commit-id>` revert just ONE commit (xd)
 
 `git reset --hard <commit>` undo everything, but warning, erase commits
+
+`git reset --soft <commit>`erase commits, but it doesn't edit files, it stage changes: the files are still the same, it's the git who changed
+
+`git restore --source <commit> <file_name>` fff
