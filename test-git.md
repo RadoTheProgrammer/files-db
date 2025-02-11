@@ -1,4 +1,3 @@
-
 C
 
 `git checkout <commit-id> `create a sandbox branch, in it, erases commits in this branch
@@ -13,4 +12,4 @@ C
 
 `git reset --soft <commit>`erase commits, but it doesn't edit files, it stage changes: the files are still the same, it's the git who changed
 
-`git restore --source <commit> <file_name>` fff
+`git restore --source <commit> <file_name>` change just the files, not the git, without staging changes (like git checkout -- . but it doesn't stage)
