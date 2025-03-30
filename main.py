@@ -54,10 +54,14 @@ def _to_datetime(timestamp):
 NAME="name"
 SIZE="size"
 ASTYPE = {
+        "name":"string",
+        "size":"int64",
+        "n":"int64",
         "ctime":"datetime64[s]",
         "mtime":"datetime64[s]",
         "atime":"datetime64[s]",
-        "name":"string"
+        "level":"int64",
+        "nls":"int64"
         }
 def create(src,show_progression=True):
     #print(cls)
@@ -81,14 +85,16 @@ def create(src,show_progression=True):
         
         if stat.S_ISDIR(st.st_mode): # equivalent to isdir
             levelitem = level+1
-            for item in os.listdir(path):
+            ls = os.listdir(path)
+            for item in ls:
                 size_add,n_add = _process(os.path.join(relpath,item),os.path.join(path,item),levelitem)
                 size+=size_add
                 n+=n_add
                 pbar.update(1)
-        
-        #ctime=_get_ctime(st,path)
-        #dnprint(pd.to_datetime(int(_get_ctime(st,path)), unit="s"))
+            nls = len(ls)
+        else:
+            nls = -1
+
         data["name"].append(relpath)
         data["size"].append(size)
         data["n"].append(n)
@@ -96,15 +102,8 @@ def create(src,show_progression=True):
         data["mtime"].append(st.st_mtime)
         data["atime"].append(st.st_atime)
         data["level"].append(level)
-        # a={
-        #     "size":size,
-        #     "n":n,
-        #     "ctime": _to_datetime(_get_ctime(st,path)),
-        #     "mtime": _to_datetime(st.st_mtime),
-        #     "atime": _to_datetime(st.st_atime),
-        #     "level": level
-        # }
-        # self.loc[relpath]=a # taking 4/5 !!
+        data["nls"].append(nls)
+
         return size,n
     
     # end of the core function
@@ -117,7 +116,7 @@ def create(src,show_progression=True):
     else:
         total=0
     
-    data={"name":[],"size":[],"n":[],"ctime":[],"mtime":[],"atime":[],"level":[]}
+    data={"name":[],"size":[],"n":[],"ctime":[],"mtime":[],"atime":[],"level":[], "nls":[]}
     with tqdm(total=total,disable=not show_progression) as pbar:
         _process("",src,0)
     
@@ -146,7 +145,20 @@ def _call(self,item:str): # at start used __getitem__ but it would cause conflic
     self._remove_blank_index()
     return self
 
+def pin_columns(self,*cols_to_pin):
+    cols = list(self.columns)
+    for n,col in enumerate(cols_to_pin):
+        #n+=1 # if name is a normal column
+        col_index = self.columns.get_loc(col)
+        cols[n], cols[col_index] = cols[col_index], cols[n]
+    return self[cols]
+
+# monkey patching
+pd.DataFrame.ls = lambda self:self[self["level"]==1] # monkey patching
 pd.DataFrame.__call__=_call
+pd.DataFrame.pin_columns=pin_columns
+pd.DataFrame.only_dirs = lambda self:self[self["nls"]!=-1]
+pd.DataFrame.only_files = lambda self:self[self["nls"]==-1]
 
                     
             

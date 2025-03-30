@@ -9,7 +9,9 @@ FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud/zzzarchives/codin
 #FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud"
 
 #timeit.timeit(lambda:FilesDatabase.create(".."),number=3)
-print(timeit.timeit(lambda:main.create(FILE),number=1))
+db = main.create(".")
+new_db=db.pin_columns("nls")
+print(new_db)
 #main.create(".")
 # BIG OPTIMIZATION: 1.25 -> 0.25, wow 5x faster
 
