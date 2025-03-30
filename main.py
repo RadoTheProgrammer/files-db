@@ -126,13 +126,11 @@ def create(src,show_progression=True):
     return db
 
 def read_csv(file):
-    db = pd.read_csv(file).astype({ASTYPE}).set_index("name")
+    db = pd.read_csv(file).astype(ASTYPE).set_index("name")
     _remove_blank_index(db)
     return db
 
-def _ls(db):
-    return (db[db["level"]==1])
-pd.DataFrame.ls = lambda self:self[self["level"]==1]
+pd.DataFrame.ls = lambda self:self[self["level"]==1] # monkey patching
 
 def _remove_blank_index(db):
     db.index=db.index.map(lambda name:name if name else ".")
