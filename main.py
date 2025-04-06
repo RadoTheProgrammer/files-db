@@ -120,29 +120,31 @@ def create(src,show_progression=True):
     with tqdm(total=total,disable=not show_progression) as pbar:
         _process("",src,0)
     
-    db=pd.DataFrame(data)[::-1].astype(ASTYPE).set_index("name")
-    _remove_blank_index(db)
+    db=pd.DataFrame(data)[::-1].reset_index(drop=True).astype(ASTYPE)
+    _remove_blank_name(db)
     return db
 
 def read_csv(file):
-    db = pd.read_csv(file).astype(ASTYPE).set_index("name")
-    _remove_blank_index(db)
+    db = pd.read_csv(file).astype(ASTYPE)
+    _remove_blank_name(db)
     return db
 
 pd.DataFrame.ls = lambda self:self[self["level"]==1] # monkey patching
 
-def _remove_blank_index(db):
-    db.index=db.index.map(lambda name:name if name else ".")
+def _remove_blank_name(db):
+    db.name=db.name.map(lambda name:name if name else ".")
 
 def _call(self,item:str): # at start used __getitem__ but it would cause conflict
     item = item.strip("/")
-    if item not in self.index:
+    if item not in self.name.values:
+        print(".git" in self.name)
+        print("__pycache__" in self.name)
         raise FileNotFoundError(item)
     
-    self = self[self.index.str.startswith(item)]
+    self = self[self.name.str.startswith(item)]
     self.level-=1
-    self.index = self.index.str[len(item)+1:] #remove the head
-    self._remove_blank_index()
+    self.name = self.name.str[len(item)+1:] #remove the head
+    _remove_blank_name(self)
     return self
 
 def pin_columns(self,*cols_to_pin):

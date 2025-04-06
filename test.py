@@ -11,6 +11,7 @@ FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud/zzzarchives/codin
 #timeit.timeit(lambda:FilesDatabase.create(".."),number=3)
 db = main.create(".")
 new_db=db.pin_columns("nls")
+new_db=db(".git")
 print(new_db)
 #main.create(".")
 # BIG OPTIMIZATION: 1.25 -> 0.25, wow 5x faster
