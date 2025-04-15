@@ -1,0 +1,15 @@
+item,size,time
+data.feather,6042354,0.062
+data.csv,43996727,1.476
+data.pkl,40174300,0.089
+data-pyarrow-gzip.parquet,3226256,0.454
+data-pyarrow-brotli.parquet,2731621,0.863
+data-pyarrow-snappy.parquet,5077382,0.104
+data-pyarrow-lz4.parquet,4648287,0.102
+data-pyarrow-zstd.parquet,3340209,0.109
+data-fastparquet-gzip.parquet,3088789,0.736
+data-fastparquet-brotli.parquet,2148498,71.801
+data-fastparquet-snappy.parquet,5732306,0.114
+data-fastparquet-lz4.parquet,5473296,0.107
+data-fastparquet-zstd.parquet,3125864,0.144
+memory-usage,51818083,0.0
