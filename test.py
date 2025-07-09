@@ -8,11 +8,11 @@ import timeit
 FILE="."
 #FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud"
 
-#timeit.timeit(lambda:FilesDatabase.create(".."),number=3)
-db = main.create(FILE)
-new_db=db.pin_columns("nls")
-new_db=db(".git")
-print(new_db)
+print(timeit.timeit(lambda:main.create(".."),number=1))
+# db = main.create(FILE)
+# new_db=db.pin_columns("nls")
+# new_db=db(".git")
+# print(new_db)
 #main.create(".")
 # BIG OPTIMIZATION: 1.25 -> 0.25, wow 5x faster
 
