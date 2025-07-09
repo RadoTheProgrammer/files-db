@@ -31,8 +31,8 @@ Other features:
 ```python
 db_ls = db.ls() # extract all root items
 db_sub = db("foo/bar") # navigate in the database by getting into 1 specific item
-db_only_dirs() # select only the dirs
-db_only_files() # select only the files
+db.only_dirs() # select only the dirs
+db.only_files() # select only the files
 db.pin_columns("nls") # pin a column(s) when you're more interested into a particular one
 
 db.to_csv(<file>) # Export into a file
