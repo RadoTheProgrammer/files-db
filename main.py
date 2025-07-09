@@ -141,7 +141,7 @@ def _call(self,item:str): # at start used __getitem__ but it would cause conflic
         print("__pycache__" in self.name)
         raise FileNotFoundError(item)
     
-    self = self[self.name.str.startswith(item)]
+    self = self[(self.name == item) | (self.name.str.startswith(f"{item}{os.sep}"))]
     self.level-=1
     self.name = self.name.str[len(item)+1:] #remove the head
     _remove_blank_name(self)
