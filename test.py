@@ -13,9 +13,14 @@ FILE="."
 # print(timeit.timeit(lambda:main.FilesDatabase.create(FILE),number=1))
 
 db = main.FilesDatabase.create(FILE)
+db_data = db("data")
+print(db.ls())
+print(db_data)
+db.sort_values("size", ascending=False)
 new_db=db.pin_columns("nls")
+new_db["nls"] = 0
 #db.to_csv("db-Rpy-mc.csv")
-print(new_db)
+#print(new_db)
 # new_db=db.pin_columns("nls")
 # new_db=db(".git")
 # print(new_db)

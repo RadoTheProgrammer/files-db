@@ -69,6 +69,9 @@ ASTYPE = {
         "nls":"int64"
         }
 class FilesDatabase(pd.DataFrame):
+    @property
+    def _constructor(self):
+        return FilesDatabase
 
     @classmethod
     def create(cls,src,show_progression=True):
@@ -153,15 +156,17 @@ class FilesDatabase(pd.DataFrame):
         self = self[(self.name == item) | (self.name.str.startswith(f"{item}{os.sep}"))]
         self.level-=1
         self.name = self.name.str[len(item)+1:] #remove the head
-        self._remove_blank_name(self)
+        self._remove_blank_name()
         return self
 
     def pin_columns(self,*cols_to_pin):
         cols = list(self.columns)
         for n,col in enumerate(cols_to_pin):
             #n+=1 # if name is a normal column
-            cols.insert(n,col)
             cols.remove(col)
+            cols.insert(n,col)
+            
+        print(cols)
         return self[cols]
 
     def only_dirs(self):
