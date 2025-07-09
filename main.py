@@ -144,18 +144,19 @@ class FilesDatabase(pd.DataFrame):
         return self[self["level"]==1]
 
     def _remove_blank_name(self):
-        self.name=self.name.map(lambda name:name if name else ".")
+        self.loc[:,"name"]=self["name"].map(lambda name:name if name else ".")
 
     def __call__(self,item:str): # at start used __getitem__ but it would cause conflict
-        item = item.strip("/")
+        item = item.strip(os.sep)
+
         if item not in self.name.values:
             print(".git" in self.name)
             print("__pycache__" in self.name)
             raise FileNotFoundError(item)
         
         self = self[(self.name == item) | (self.name.str.startswith(f"{item}{os.sep}"))]
-        self.level-=1
-        self.name = self.name.str[len(item)+1:] #remove the head
+        self.loc[:,"level"]-=item.count(os.sep)+1
+        self.loc[:,"name"] = self.name.str[len(item)+1:] #remove the head
         self._remove_blank_name()
         return self
 
