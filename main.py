@@ -170,7 +170,8 @@ class FilesDatabase(pd.DataFrame):
     def only_files(self):
         return self[self["nls"]==-1]
 
-                    
+create = FilesDatabase.create
+read_csv = FilesDatabase.read_csv
             
         
         

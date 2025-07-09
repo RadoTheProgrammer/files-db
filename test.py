@@ -6,11 +6,16 @@ import timeit
 #FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud/zzzarchives/coding/Rpy-mc" 27380
 #FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud"
 FILE=r"c:\Users\rrrad\OneDrive - Education Vaud\archives\coding\Rpy-mc"
+FILE="."
 #FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud"
 
-print(timeit.timeit(lambda:main.FilesDatabase.create(FILE),number=1))
-print(timeit.timeit(lambda:main2.FilesDatabase.create(FILE),number=1))
-# db = main.create(FILE)
+# print(timeit.timeit(lambda:main2.create(FILE),number=1))
+# print(timeit.timeit(lambda:main.FilesDatabase.create(FILE),number=1))
+
+db = main.FilesDatabase.create(FILE)
+new_db=db.pin_columns("nls")
+#db.to_csv("db-Rpy-mc.csv")
+print(new_db)
 # new_db=db.pin_columns("nls")
 # new_db=db(".git")
 # print(new_db)
