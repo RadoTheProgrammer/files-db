@@ -1,14 +1,15 @@
-import main
+import main,main2
 import timeit 
 #FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud/zzzarchives/coding" # 6s, 1654 # PERFECT
 #FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud/zzzarchives/coding/MetalColor" #8s, 2046
 #FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud/zzzarchives/coding/github-explore/requests"
 #FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud/zzzarchives/coding/Rpy-mc" 27380
 #FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud"
-FILE="."
+FILE=r"c:\Users\rrrad\OneDrive - Education Vaud\archives\coding\Rpy-mc"
 #FILE="/Users/alain/Library/CloudStorage/OneDrive-EducationVaud"
 
-print(timeit.timeit(lambda:main.create(r"c:\Users\rrrad\OneDrive - Education Vaud\archives\coding\Rpy-mc"),number=1))
+print(timeit.timeit(lambda:main.FilesDatabase.create(FILE),number=1))
+print(timeit.timeit(lambda:main2.FilesDatabase.create(FILE),number=1))
 # db = main.create(FILE)
 # new_db=db.pin_columns("nls")
 # new_db=db(".git")
